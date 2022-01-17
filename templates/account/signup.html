@@ -1,0 +1,55 @@
+{% extends "account/base.html" %}
+
+{% block content %}
+
+    <h1>Sign Up</h1>
+
+    <p>Already have an account? Then please <a href="{{ login_url }}">sign in</a>.</p>
+
+    <form class="signup" id="signup_form" method="post" action="{% url 'account_signup' %}">
+        {% csrf_token %}
+        {{ form.non_field_errors }}
+        {{ form.email.errors }}
+        <div class="form-floating">
+            {{ form.email }}
+            <label for="{{ form.email.id_for_label }}">Email address</label>
+        </div>
+        {{ form.password1.errors }}
+        <div class="form-floating mt-2">
+            {{ form.password1 }}
+            <label for="{{ form.password1.id_for_label }}">Password</label>
+        </div>
+        {{ form.password2.errors }}
+        <div class="form-floating mt-2">
+            {{ form.password2 }}
+            <label for="{{ form.password2.id_for_label }}">Password (again)</label>
+        </div>
+        {% if redirect_field_value %}
+            <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}"/>
+        {% endif %}
+        <div class="row">
+            <div class="col-auto align-self-center mt-2">
+                <button type="submit" class="btn btn-primary">Sign Up &raquo;</button>
+            </div>
+        </div>
+    </form>
+
+{% endblock %}
+
+{% block scripts %}
+
+    <script>
+      // Manual override of the 'email' form field to implement Bootstrap formatting
+      email_elem = document.getElementById("{{ form.email.id_for_label }}");
+      email_elem.classList.add("form-control");
+
+      // Manual override of the 'password1' form field to implement Bootstrap formatting
+      password1_elem = document.getElementById("{{ form.password1.id_for_label }}");
+      password1_elem.classList.add("form-control");
+
+      // Manual override of the 'password2' form field to implement Bootstrap formatting
+      password2_elem = document.getElementById("{{ form.password2.id_for_label }}");
+      password2_elem.classList.add("form-control");
+    </script>
+
+{% endblock %}

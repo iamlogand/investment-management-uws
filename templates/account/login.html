@@ -1,0 +1,57 @@
+{% extends "account/base.html" %}
+
+{% block content %}
+
+    <h1>Sign In</h1>
+
+    <p>If you have not created an account yet, then please <a href="{{ signup_url }}">sign up</a> first.</p>
+
+    <form class="login" method="POST" action="{% url 'account_login' %}" id="account-form">
+        {% csrf_token %}
+        {{ form.non_field_errors }}
+        {{ form.login.errors }}
+        <div class="form-floating">
+            {{ form.login }}
+            <label for="{{ form.login.id_for_label }}">Email address:</label>
+        </div>
+        {{ form.password.errors }}
+        <div class="form-floating mt-2">
+            {{ form.password }}
+            <label for="{{ form.password.id_for_label }}">Password:</label>
+        </div>
+        <div class="form-check mt-2">
+            {{ form.remember }}
+            <label for="{{ form.remember.id_for_label }}" class="form-check-label">Remember me</label>
+        </div>
+        {% if redirect_field_value %}
+            <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}"/>
+        {% endif %}
+        <div class="row">
+            <div class="col-auto align-self-center mt-2">
+                <a class="button secondaryAction" href="{% url 'account_reset_password' %}">Forgot Password?</a>
+            </div>
+            <div class="col-auto mt-2">
+                <button class="primaryAction btn btn-primary" type="submit">Sign In</button>
+            </div>
+        </div>
+    </form>
+
+{% endblock %}
+
+{% block scripts %}
+
+    <script>
+      // Manual override of the 'login' form field to implement Bootstrap formatting
+      login_elem = document.getElementById("{{ form.login.id_for_label }}");
+      login_elem.classList.add("form-control");
+
+      // Manual override of the 'password' form field to implement Bootstrap formatting
+      password_elem = document.getElementById("{{ form.password.id_for_label }}");
+      password_elem.classList.add("form-control");
+
+      // Manual override of the 'remember' form field to implement Bootstrap formatting
+      remember_elem = document.getElementById("{{ form.remember.id_for_label }}");
+      remember_elem.classList.add("form-check-input");
+    </script>
+
+{% endblock %}
