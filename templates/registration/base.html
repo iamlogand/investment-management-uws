@@ -16,10 +16,16 @@
 
 </head>
 <body>
+<div class="container bg-primary rounded overflow-hidden pb-2 px-2">
+    <div class="row justify-content-center">
+        <div class="col-auto text-white mt-1 mx-1">
+            <h2>Investment Portfolio Application</h2>
+        </div>
+    </div>
+    {% block content %}{% endblock %}
+</div>
 
-Expenses App Header
 
-{% block content %}{% endblock %}
 
 {% block scripts %}{% endblock %}
 

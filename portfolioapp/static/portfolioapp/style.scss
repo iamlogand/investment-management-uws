@@ -1,7 +1,8 @@
 @use "sass:map";
 
-@import "../vendor/bootstrap/scss/bootstrap";
+$primary: #5969B1;
+$success: #288F76;
+$info: #59AED9;
+$light: #D6EDFF;
 
-body {
-  color: blue;
-}
+@import "../vendor/bootstrap/scss/bootstrap";
