@@ -128,6 +128,7 @@ LOGIN_REDIRECT_URL = "portfolioapp:home"
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_AUTHENTICATION_METHOD = "email"
 ACCOUNT_USERNAME_REQUIRED = False
+ACCOUNT_EMAIL_VERIFICATION = "mandatory"
 
 # For sending emails
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
