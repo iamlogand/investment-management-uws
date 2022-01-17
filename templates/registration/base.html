@@ -1,0 +1,33 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <!-- meta tags required for Bootstrap -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" type="text/css" href="{% static "portfolioapp/style.css" %}"/>
+
+    <!-- Title -->
+    {% block title %}<title>Investment Portfolio Application</title>{% endblock %}
+
+</head>
+<body>
+
+Expenses App Header
+
+{% block content %}{% endblock %}
+
+{% block scripts %}{% endblock %}
+
+<!-- JavaScript plugins -->
+<script src="{% static 'vendor/bootstrap/dist/js/bootstrap.bundle.js' %}"></script>
+
+<!-- Font Awesome -->
+<script src="https://kit.fontawesome.com/b895e44baa.js" crossorigin="anonymous"></script>
+
+</body>
+</html>
