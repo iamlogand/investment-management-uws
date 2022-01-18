@@ -1,8 +1,6 @@
 @use "sass:map";
 
-$primary: #5969B1;
-$success: #288F76;
-$info: #59AED9;
+$primary: #55709f;
 $light: #D6EDFF;
 
 @import "../vendor/bootstrap/scss/bootstrap";
@@ -11,4 +9,13 @@ $light: #D6EDFF;
   .custom-sm-border {
     border-radius: 4px;
   }
+}
+
+#body-with-nav-above {
+  margin-top: 100px;
+}
+
+// Themed background gradient
+.themed-bg {
+  background: linear-gradient(40deg, #24c9d5 0px, #766fb4 100%);
 }

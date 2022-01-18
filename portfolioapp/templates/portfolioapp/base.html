@@ -12,17 +12,50 @@
     <link rel="stylesheet" type="text/css" href="{% static "portfolioapp/style.css" %}"/>
 
     <!-- Title -->
-    {% block title %}<title>Investment Portfolio Application</title>{% endblock %}
+    <title>Investment Manager</title>
 
     <!-- Scripts -->
     <script src="{% static "vendor/jquery/jquery-3.6.0.min.js" %}"></script>
 
 </head>
-<body>
+<body id="body-with-nav-above">
 
-<p>Portfolio App Header</p>
+<nav class="navbar fixed-top navbar-expand-sm navbar-light bg-white bg-opacity-75">
+    <div class="container-sm">
+        <div class="navbar-brand px-3 pt-1 rounded rounded-pill themed-bg">
+            <span class="text-white">Investment Manager</span>
+        </div>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+                aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse justify-content-start" id="navbarSupportedContent">
+            <ul class="navbar-nav me-auto mb-2 mb-sm-0">
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url "portfolioapp:home" %}" id="home-link">
+                        <span class="bg-white bg-opacity-75 py-1 px-2 rounded">Track</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" id="manage-link">
+                        <span class="bg-white bg-opacity-75 py-1 px-2 rounded">Manage</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url "account_logout" %}">
+                        <span class="bg-white bg-opacity-75 py-1 px-2 rounded text-dark">Logout</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
 
-{% block content %}{% endblock %}
+<div class="container">
+
+    {% block content %}{% endblock %}
+
+</div>
 
 {% block scripts %}{% endblock %}
 
