@@ -10746,5 +10746,10 @@ textarea.form-control-lg {
     display: none !important;
   }
 }
+@media (min-width: 576px) {
+  .custom-sm-border {
+    border-radius: 4px;
+  }
+}
 
 /*# sourceMappingURL=style.css.map */

@@ -10,16 +10,16 @@
         {% csrf_token %}
         {{ form.non_field_errors }}
         {{ form.login.errors }}
-        <div class="form-floating">
+        <div class="form-floating mb-2">
             {{ form.login }}
             <label for="{{ form.login.id_for_label }}">Email address:</label>
         </div>
         {{ form.password.errors }}
-        <div class="form-floating mt-2">
+        <div class="form-floating mb-2">
             {{ form.password }}
             <label for="{{ form.password.id_for_label }}">Password:</label>
         </div>
-        <div class="form-check mt-2">
+        <div class="form-check">
             {{ form.remember }}
             <label for="{{ form.remember.id_for_label }}" class="form-check-label">Remember me</label>
         </div>

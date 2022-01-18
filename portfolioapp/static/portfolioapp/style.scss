@@ -7,6 +7,8 @@ $light: #D6EDFF;
 
 @import "../vendor/bootstrap/scss/bootstrap";
 
-#account-form {
-
+@include media-breakpoint-up(sm) {
+  .custom-sm-border {
+    border-radius: 4px;
+  }
 }

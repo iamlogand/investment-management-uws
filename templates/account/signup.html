@@ -10,17 +10,17 @@
         {% csrf_token %}
         {{ form.non_field_errors }}
         {{ form.email.errors }}
-        <div class="form-floating">
+        <div class="form-floating mb-2">
             {{ form.email }}
             <label for="{{ form.email.id_for_label }}">Email address</label>
         </div>
         {{ form.password1.errors }}
-        <div class="form-floating mt-2">
+        <div class="form-floating mb-2">
             {{ form.password1 }}
             <label for="{{ form.password1.id_for_label }}">Password</label>
         </div>
         {{ form.password2.errors }}
-        <div class="form-floating mt-2">
+        <div class="form-floating">
             {{ form.password2 }}
             <label for="{{ form.password2.id_for_label }}">Password (again)</label>
         </div>
@@ -28,7 +28,7 @@
             <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}"/>
         {% endif %}
         <div class="row">
-            <div class="col-auto align-self-center mt-2">
+            <div class="col-auto align-self-center mt-3">
                 <button type="submit" class="btn btn-primary">Sign Up &raquo;</button>
             </div>
         </div>

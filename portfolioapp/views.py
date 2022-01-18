@@ -9,3 +9,5 @@ class HomeView(LoginRequiredMixin, TemplateView):
 
 def home_redirect_view(request):
     return redirect("/home/")
+
+
