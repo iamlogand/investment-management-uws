@@ -131,15 +131,17 @@ ACCOUNT_USERNAME_REQUIRED = False
 ACCOUNT_EMAIL_VERIFICATION = "mandatory"
 
 
-# EMAIL SETTINGS
+# Email settings
 DEFAULT_FROM_EMAIL = "no-reply@investment-portfolio-22.herokuapp.com"
 
-# Pretending to send emails in development
-EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+if os.environ.get("MAILGUN_SMTP_SERVER", "") == "smtp.mailgun.org":
+    # Sending real emails in production
+    EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+    EMAIL_HOST = os.environ.get("MAILGUN_SMTP_SERVER", "")
+    EMAIL_PORT = os.environ.get("MAILGUN_SMTP_PORT", "")
+    EMAIL_HOST_USER = os.environ.get("MAILGUN_SMTP_LOGIN", "")
+    EMAIL_HOST_PASSWORD = os.environ.get("MAILGUN_SMTP_PASSWORD", "")
 
-# Sending real emails in production
-# EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-# EMAIL_HOST = os.environ.get("MAILGUN_SMTP_SERVER", "")
-# EMAIL_PORT = os.environ.get("MAILGUN_SMTP_PORT", "")
-# EMAIL_HOST_USER = os.environ.get("MAILGUN_SMTP_LOGIN", "")
-# EMAIL_HOST_PASSWORD = os.environ.get("MAILGUN_SMTP_PASSWORD", "")
+else:
+    # Pretending to send emails in development
+    EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
