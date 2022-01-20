@@ -73,11 +73,16 @@
                 <div class="col-auto mt-2">
                     <div class="mt-1">
                         <span class="opacity-75">Selected Portfolio:</span>&nbsp;
-                        {{ request.user.get_selected_portfolio.name }}
+                        {% if request.user.get_selected_portfolio %}
+                            {{ request.user.get_selected_portfolio.name }}
+                        {% else %}
+                            None
+                        {% endif %}
                     </div>
                 </div>
                 <div class="col-auto mt-2">
-                    <a class="btn bg-white bg-opacity-50 pt-1" href="{% url "portfolioapp:portfolio_list" %}">
+                    <a class="btn bg-white bg-opacity-50 pt-1" href="{% url "portfolioapp:portfolio_list" %}"
+                       id="portfolioButton">
                         Portfolios
                     </a>
                 </div>
