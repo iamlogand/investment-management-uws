@@ -20,30 +20,30 @@
 </head>
 <body id="body-with-nav-above">
 
-<nav class="navbar fixed-top navbar-expand-sm navbar-light bg-white bg-opacity-75">
+<nav class="navbar fixed-top navbar-expand-sm navbar-light bg-light pt-0">
     <div class="container-sm">
-        <div class="navbar-brand px-3 pt-1 rounded rounded-pill themed-bg">
+        <div class="navbar-brand mt-2 px-3 pt-1 rounded rounded-pill themed-bg">
             <span class="text-white">Investment Manager</span>
         </div>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+        <button class="navbar-toggler mt-2" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
                 aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
-        <div class="collapse navbar-collapse justify-content-start" id="navbarSupportedContent">
+        <div class="collapse mt-2 navbar-collapse justify-content-start" id="navbarSupportedContent">
             <ul class="navbar-nav me-auto mb-2 mb-sm-0">
                 <li class="nav-item">
-                    <a class="nav-link mx-1 px-0" href="{% url "portfolioapp:home" %}" id="home-link">
-                        <span class="bg-white py-1 px-2 rounded">Track</span>
+                    <a class="nav-link" href="{% url "portfolioapp:home" %}" id="home-link">
+                        <span class="">Home</span>
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link mx-1 px-0" href="#" id="manage-link">
-                        <span class="bg-white py-1 px-2 rounded">Manage</span>
+                    <a class="nav-link" href="{% url "portfolioapp:track" %}" id="track-link">
+                        <span class="">Track</span>
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link mx-1 px-0" href="{% url "account_logout" %}">
-                        <span class="bg-white py-1 px-2 rounded text-dark">Logout</span>
+                    <a class="nav-link" href="{% url "portfolioapp:manage" %}" id="manage-link">
+                        <span class="">Manage</span>
                     </a>
                 </li>
             </ul>
@@ -51,7 +51,42 @@
     </div>
 </nav>
 
-<div class="container">
+<div class="container-fluid bg-primary text-white pb-2">
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <div class="row justify-content-center">
+                <div class="col-auto mt-2">
+                    <div class="mt-1">
+                        <span class="opacity-75">User:</span>&nbsp;
+                        {{ request.user.email }}
+                    </div>
+                </div>
+                <div class="col-auto mt-2">
+                    <a class="btn bg-white bg-opacity-50 pt-1" href="{% url "account_logout" %}">
+                        Logout
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="row justify-content-center">
+                <div class="col-auto mt-2">
+                    <div class="mt-1">
+                        <span class="opacity-75">Selected Portfolio:</span>&nbsp;
+                        {{ request.user.get_selected_portfolio.name }}
+                    </div>
+                </div>
+                <div class="col-auto mt-2">
+                    <a class="btn bg-white bg-opacity-50 pt-1" href="{% url "portfolioapp:portfolio_list" %}">
+                        Portfolios
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container overflow-hidden">
 
     {% block content %}{% endblock %}
 

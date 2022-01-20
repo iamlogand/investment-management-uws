@@ -145,3 +145,7 @@ if os.environ.get("MAILGUN_SMTP_SERVER", "") == "smtp.mailgun.org":
 else:
     # Pretending to send emails in development
     EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+
+
+# Custom user model
+AUTH_USER_MODEL = 'portfolioapp.User'

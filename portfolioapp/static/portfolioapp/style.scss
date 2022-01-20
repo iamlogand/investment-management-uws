@@ -1,7 +1,8 @@
 @use "sass:map";
 
 $primary: #55709f;
-$light: #D6EDFF;
+$light: #d3ebf0;
+$info: #32b9cf;
 
 @import "../vendor/bootstrap/scss/bootstrap";
 
@@ -11,11 +12,22 @@ $light: #D6EDFF;
   }
 }
 
+// Space above body to compensate for the fixed navbar
 #body-with-nav-above {
-  margin-top: 100px;
+  margin-top: 56px;
+  @media (max-width: 327px) {
+    margin-top: 103px;
+  }
 }
 
 // Themed background gradient
 .themed-bg {
   background: linear-gradient(40deg, #24c9d5 0px, #766fb4 100%);
 }
+
+// Make element have small font
+.custom-small-font {
+  font-size: small;
+}
+
+@import "../vendor/fontawesome/css/all";
