@@ -232,6 +232,7 @@ class InvestmentAccount(models.Model):
 class Security(models.Model):
     name = models.CharField(max_length=50)
     ISIN = models.CharField(max_length=12, unique=True)
+    yahoo_id = models.CharField(max_length=10, null=True)
 
     class Meta:
         verbose_name_plural = "securities"
@@ -252,6 +253,12 @@ class SecurityQuote(models.Model):
     security = models.ForeignKey(Security, on_delete=models.CASCADE)
     currency = models.ForeignKey(Currency, on_delete=models.CASCADE)
     price = models.FloatField()
+
+    @classmethod
+    def create(cls, security, currency, price):
+        now = timezone.now()
+        security_quote = cls(datetime=now, security=security, currency=currency, price=price)
+        return security_quote
 
     def get_string_value_iso(self, quantity):
         string_out = "{:.2f} {}".format(self.price * quantity, self.currency.iso_code)
