@@ -1,8 +1,32 @@
 {% extends "portfolioapp/base.html" %}
 
+{% block portfolio_button %}
+    {% if request.user.get_selected_portfolio %}
+    <a class="btn bg-white bg-opacity-50 pt-1" href="{% url "portfolioapp:overview" %}"
+       id="portfolioButton">
+        View Selected Portfolio
+    </a>
+    {% endif %}
+{% endblock %}
+
 {% block content %}
 
     <div class="row mt-2 gx-5">
+        {% if not request.user.get_selected_portfolio %}
+        <div class="col-12">
+            <div class="row justify-content-center">
+                <div class="col-auto alert alert-info">
+                    {% if portfolio_list %}
+                        <i class="fas fa-info-circle"></i>
+                        <span>You haven't selected a portfolio. Please select a portfolio from the list below.</span>
+                    {% else %}
+                        <i class="fas fa-info-circle"></i>
+                        <span>You have no portfolios. To make one, click the "Create new portfolio" button below.</span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% endif %}
         <h1>Portfolios</h1>
         <p>Here you can select, rename and delete your portfolios.</p>
         <hr>
@@ -10,13 +34,17 @@
             <h3>All Portfolios</h3>
 
             {% if portfolio_list %}
-                <span>Click to select a portfolio from the list:</span>
+                <span>
+                    <span class="d-sm-none">Tap</span>
+                    <span class="d-none d-sm-inline-flex ">Click</span>
+                    to select a portfolio from the list.
+                </span>
                 <div class="table-responsive">
-                    <table class="table align-middle">
+                    <table class="table align-middle table-hover">
                         <thead>
                             <tr>
                                 <th scope="col">Portfolio</th>
-                                <th scope="col">Creation Date</th>
+                                <th scope="col" class="col-4 text-nowrap">Creation Date</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -24,20 +52,24 @@
                                 {% if p.selected == True %}
                                     <tr class="table-active">
                                         <td>
-                                            {{ p.name }}&nbsp;
+                                            {{ p }}&nbsp;
                                             <span class="badge bg-info custom-small-font">Selected</span>
                                         </td>
-                                {% else %}
-                                    <tr class="clickable-row"
-                                        data-href="{% url "portfolioapp:portfolio_selector" p.name %}">
-                                        <td>
-                                            {{ p.name }}
-                                        </td>
-                                {% endif %}
-                                        <td>
-                                            {{ p.creation_date.date }}
+                                        <td class="col-4 text-nowrap">
+                                            {{ p.get_string_creation_date }}
                                         </td>
                                     </tr>
+                                {% else %}
+                                    <tr class="clickable-row"
+                                        data-href="{% url "portfolioapp:portfolio_selector" p %}">
+                                        <td>
+                                            {{ p }}
+                                        </td>
+                                        <td class="col-4 text-nowrap">
+                                            {{ p.get_string_creation_date }}
+                                        </td>
+                                    </tr>
+                                {% endif %}
                             {% endfor %}
                         </tbody>
                     </table>
@@ -57,9 +89,9 @@
 
                     <dl class="row">
                         <dt class="col-4">Name</dt>
-                        <dd class="col-8">{{ request.user.get_selected_portfolio.name }}</dd>
-                        <dt class="col-4">Created</dt>
-                        <dd class="col-8">{{ request.user.get_selected_portfolio.creation_date }}</dd>
+                        <dd class="col-8">{{ request.user.get_selected_portfolio }}</dd>
+                        <dt class="col-4">Created on</dt>
+                        <dd class="col-8">{{ request.user.get_selected_portfolio.get_string_creation_date_time }}</dd>
                     </dl>
                     <div class="row gx-2 justify-content-end">
                         <div class="col-auto mt-2">
@@ -71,7 +103,7 @@
                         <div class="col-auto mt-2">
                             <button type="button" class="btn btn-danger" data-bs-toggle="modal"
                                     data-bs-target="#delete-portfolio-modal">
-                                Delete
+                                Delete portfolio
                             </button>
                         </div>
                     </div>
@@ -81,6 +113,7 @@
     </div>
 
     <!-- Modal for renaming the selected portfolio -->
+    {% if request.user.get_selected_portfolio %}
     <div class="modal" id="rename-portfolio-modal" tabindex="-1" aria-labelledby="rename-portfolio-modal-label"
          aria-hidden="true" data-bs-backdrop="static">
         <div class="modal-dialog">
@@ -89,7 +122,7 @@
                     <h5 class="modal-title" id="rename-portfolio-modal-label">Rename Portfolio?</h5>
                     <a class="btn-close" href="{% url "portfolioapp:portfolio_list" %}"></a>
                 </div>
-                <form action="{% url "portfolioapp:portfolio_rename" %}" method="post">
+                <form action="{% url "portfolioapp:portfolio_rename" request.user.get_selected_portfolio.name %}" method="post">
                     <div class="modal-body">
                         {% csrf_token %}
                         <div class="mb-3">
@@ -116,8 +149,10 @@
             </div>
         </div>
     </div>
+    {% endif %}
 
     <!-- Modal for deleting the selected portfolio -->
+    {% if request.user.get_selected_portfolio %}
     <div class="modal" id="delete-portfolio-modal" tabindex="-1" aria-labelledby="delete-portfolio-modal-label"
          aria-hidden="true" data-bs-backdrop="static">
         <div class="modal-dialog">
@@ -126,12 +161,12 @@
                     <h5 class="modal-title" id="delete-portfolio-modal-label">Delete Portfolio?</h5>
                     <a class="btn-close" href="{% url "portfolioapp:portfolio_list" %}"></a>
                 </div>
-                <form action="{% url "portfolioapp:portfolio_delete" %}" method="post">
+                <form action="{% url "portfolioapp:portfolio_delete" request.user.get_selected_portfolio.name %}" method="post">
                     <div class="modal-body">
                         {% csrf_token %}
                         <p>
                             You are about the delete
-                            <b>{{ request.user.get_selected_portfolio.name }}</b>.
+                            <b>{{ request.user.get_selected_portfolio.name }}</b> and all investment accounts associated with it.
                             To confirm this, you must type in the exact name of the portfolio.
                         </p>
                         <span class="text-danger">{{ portfolio_delete_form.name.errors }}</span>
@@ -148,6 +183,7 @@
             </div>
         </div>
     </div>
+    {% endif %}
 
     <!-- Modal for creating a new portfolio -->
     <div class="modal" id="create-portfolio-modal" tabindex="-1" aria-labelledby="create-portfolio-modal-label"
@@ -188,56 +224,52 @@
     <script>
 
       $(document).ready(function () {
-
         // Show the portfolio rename modal on page ready if the form has errored
         {% if portfolio_rename_form.new_name.errors %}
-          var renamePortfolioElem = document.getElementById("rename-portfolio-modal");
-          var renamePortfolioModal = new bootstrap.Modal(renamePortfolioElem, {});
+          let renamePortfolioElem = document.getElementById("rename-portfolio-modal");
+          let renamePortfolioModal = new bootstrap.Modal(renamePortfolioElem, {});
           renamePortfolioModal.show();
         {% endif %}
-
         // Show the portfolio delete modal on page ready if the form has errored
         {% if portfolio_delete_form.name.errors %}
-          var deletePortfolioElem = document.getElementById("delete-portfolio-modal");
-          var deletePortfolioModal = new bootstrap.Modal(deletePortfolioElem, {});
+          let deletePortfolioElem = document.getElementById("delete-portfolio-modal");
+          let deletePortfolioModal = new bootstrap.Modal(deletePortfolioElem, {});
           deletePortfolioModal.show();
         {% endif %}
-
         // Show the portfolio create modal on page ready if the form has errored
         {% if portfolio_create_form.new_port.errors %}
-          var createPortfolioElem = document.getElementById("create-portfolio-modal");
-          var createPortfolioModal = new bootstrap.Modal(createPortfolioElem, {});
+          let createPortfolioElem = document.getElementById("create-portfolio-modal");
+          let createPortfolioModal = new bootstrap.Modal(createPortfolioElem, {});
           createPortfolioModal.show();
         {% endif %}
-
         // Manual override of the rename-portfolio 'new_name' form field to implement Bootstrap formatting
-        {% if portfolio_rename_form %}
-        var portfolio_rename_new_name_elem = document.getElementById("{{ portfolio_rename_form.new_name.id_for_label }}");
-        portfolio_rename_new_name_elem.classList.add("form-control");
-        portfolio_rename_new_name_elem.setAttribute("aria-describedby", "portfolio_rename_desc");
+        {% if portfolio_rename_form and request.user.get_selected_portfolio %}
+          let portfolio_rename_new_name_elem = document.getElementById("{{ portfolio_rename_form.new_name.id_for_label }}");
+          portfolio_rename_new_name_elem.classList.add("form-control");
+          portfolio_rename_new_name_elem.setAttribute("aria-describedby", "portfolio_rename_desc");
         {% endif %}
-
         // Manual override of the delete-portfolio 'name' form field to implement Bootstrap formatting
-        {% if portfolio_delete_form %}
-        var portfolio_delete_name_elem = document.getElementById("{{ portfolio_delete_form.name.id_for_label }}");
-        portfolio_delete_name_elem.classList.add("form-control");
+        {% if portfolio_delete_form and request.user.get_selected_portfolio %}
+          let portfolio_delete_name_elem = document.getElementById("{{ portfolio_delete_form.name.id_for_label }}");
+          portfolio_delete_name_elem.classList.add("form-control");
         {% endif %}
-
         // Manual override of the create-portfolio 'new_port' form field to implement Bootstrap formatting
         {% if portfolio_create_form %}
-        var portfolio_create_new_port_elem = document.getElementById("{{ portfolio_create_form.new_port.id_for_label }}");
-        portfolio_create_new_port_elem.classList.add("form-control");
-        portfolio_create_new_port_elem.setAttribute("aria-describedby", "portfolio_create_desc");
+          let portfolio_create_new_port_elem = document.getElementById("{{ portfolio_create_form.new_port.id_for_label }}");
+          portfolio_create_new_port_elem.classList.add("form-control");
+          portfolio_create_new_port_elem.setAttribute("aria-describedby", "portfolio_create_desc");
         {% endif %}
 
       });
 
       // Make the rows in the table clickable using jQuery
-      jQuery(document).ready(function ($) {
-        $(".clickable-row").click(function () {
-          window.location = $(this).data("href");
+      {% if request.user.get_owned_portfolios %}
+        jQuery(document).ready(function ($) {
+          $(".clickable-row").click(function () {
+            window.location = $(this).data("href");
+          });
         });
-      });
+      {% endif %}
 
     </script>
 

@@ -1,0 +1,81 @@
+{% extends "portfolioapp/base.html" %}
+
+{% block content %}
+
+    <div class="row mt-2">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <a href="{% url "portfolioapp:portfolio_list" %}">
+                        Portfolios
+                    </a>
+                </li>
+                <li class="breadcrumb-item" aria-current="page">
+                    {{ request.user.get_selected_portfolio }}
+                </li>
+            </ol>
+        </nav>
+        <h4 class="text-muted">Portfolio Overview</h4>
+        <h1>{{ portfolio }}</h1>
+        <p>Here you can see investment accounts in the selected portfolio.</p>
+        <hr>
+        <div class="col">
+            <h3>Investment Accounts</h3>
+            {% if portfolio.get_investment_accounts %}
+                <span>
+                    <span class="d-sm-none">Tap</span>
+                    <span class="d-none d-sm-inline-flex ">Click</span>
+                    an account to view more details.
+                </span>
+                <div class="table-responsive">
+                    <table class="table align-middle table-hover">
+                        <thead>
+                            <tr>
+                                <th scope="col">Platform</th>
+                                <th scope="col">Account Type</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for account in portfolio.get_investment_accounts %}
+                                <tr class="clickable-row"
+                                    data-href="{% url "portfolioapp:investment_account" account.account_type.platform.name account.account_type.name %}">
+                                    <td>{{ account.account_type.platform }}</td>
+                                    <td>{{ account.account_type.name }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <p>There are no investment accounts in the selected portfolio.</p>
+            {% endif %}
+            <a class="btn btn-primary mb-3" href="{% url "portfolioapp:account_add" %}">
+                Add Account
+            </a>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block scripts %}
+
+    <script>
+
+      $(document).ready(function () {
+
+        // Set the navbar home link to active
+        let description_input_element = document.getElementById("overview-link");
+        description_input_element.classList.add("active");
+
+      });
+
+      // Make the rows in the table clickable using jQuery
+      jQuery(document).ready(function ($) {
+        $(".clickable-row").click(function () {
+          window.location = $(this).data("href");
+        });
+      });
+
+    </script>
+
+{% endblock %}

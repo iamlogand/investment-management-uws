@@ -1,0 +1,215 @@
+{% extends "portfolioapp/base.html" %}
+
+{% block content %}
+
+    <div class="row mt-2">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <a href="{% url "portfolioapp:portfolio_list" %}">
+                        Portfolios
+                    </a>
+                </li>
+                <li class="breadcrumb-item">
+                    <a href="{% url "portfolioapp:overview" %}">
+                        {{ request.user.get_selected_portfolio }}
+                    </a>
+                </li>
+                <li class="breadcrumb-item" aria-current="page">
+                    {{ account.account_type }}
+                </li>
+            </ol>
+        </nav>
+        <h4 class="text-muted">Investment Account</h4>
+        <h1>
+            {{ account.account_type }}
+        </h1>
+        <p>Here you will be able to see details about this investment account.</p>
+        <hr>
+        <div class="col-12 col-lg">
+            <h3>Summary</h3>
+            <dl class="row">
+                <dt class="col-6">Cash balance:</dt>
+                <dd class="col-6">{{ account.get_string_cash_balance }}</dd>
+            </dl>
+        </div>
+        <hr class="d-block d-lg-none">
+        <div class="col-12 col-lg">
+            <div class="row align-items-center justify-content-between mb-1">
+                <div class="col-auto">
+                    <h3 class="my-0">Recent Events</h3>
+                </div>
+                <div class="col-auto my-0">
+                    <a class="btn btn-primary dropdown-toggle" href="#" role="button" id="dropdownAddEvent"
+                       data-bs-toggle="dropdown" aria-expanded="false">
+                        Add event
+                    </a>
+
+                    <ul class="dropdown-menu" aria-labelledby="dropdownAddEvent">
+                        <li>
+                            <a class="dropdown-item"
+                               href="{% url "portfolioapp:cash_deposit_add" account.account_type.platform.name account.account_type.name %}">
+                                Cash deposit
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item"
+                               href="{% url "portfolioapp:cash_withdrawal_add" account.account_type.platform.name account.account_type.name %}">
+                                Cash withdrawal
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item"
+                               href="{% url "portfolioapp:security_purchase_add" account.account_type.platform.name account.account_type.name %}">
+                                Security purchase
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item"
+                               href="{% url "portfolioapp:security_sale_add" account.account_type.platform.name account.account_type.name %}">
+                                Security sale
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            {% if account.get_events_list %}
+                <p class="mb-2">
+                    <span class="d-sm-none">Tap</span>
+                    <span class="d-none d-sm-inline-flex ">Click</span>
+                    an event to view more details.
+                </p>
+                <div class="table-responsive">
+                    <table class="table align-middle table-hover">
+                        <thead>
+                            <tr>
+                                <th scope="col">#</th>
+                                <th scope="col">Date</th>
+                                <th scope="col">Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for event in account.get_events_list %}
+                            <tr class="clickable-row"
+                                data-href="{% url "portfolioapp:event" account.account_type.platform.name account.account_type.name event.rank %}">
+                                <td>{{ event.rank }}</td>
+                                <td>{{ event.date }}</td>
+                                <td>{{ event.description|capfirst }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <p>There are no events.</p>
+            {% endif %}
+        </div>
+        <hr>
+        <div class="col">
+            <h3 class="my-0">Owned Securities</h3>
+            {% if account.get_securities_list %}
+                <p class="mb-2">
+                    <span class="d-sm-none">Tap</span>
+                    <span class="d-none d-sm-inline-flex ">Click</span>
+                    a security to view more details. (coming soon)
+                </p>
+                <div class="table-responsive">
+                    <table class="table align-middle table-hover">
+                        <thead>
+                            <tr>
+                                <th scope="col">Name</th>
+                                <th scope="col">ISIN</th>
+                                <th scope="col">Price</th>
+                                <th scope="col">Updated</th>
+                                <th scope="col">Shares owned</th>
+                                <th scope="col">Value</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for owned_security in account.get_securities_list %}
+                            <tr class="clickable-row"
+                                data-href="#">
+                                <td>{{ owned_security.security.name }}</td>
+                                <td class="font-monospace">{{ owned_security.security.ISIN }}</td>
+                                <td>{{ owned_security.latest_quote.get_string_price_iso }}</td>
+                                <td>{{ owned_security.latest_quote.get_string_datetime }}</td>
+                                <td>{{ owned_security.shares_owned }}</td>
+                                <td>{{ owned_security.latest_value }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <p>There are no owned securities.</p>
+            {% endif %}
+        </div>
+        <hr>
+        <h3>Details</h3>
+        <div class="col-12">
+            <dl class="row">
+                <dt class="col-6 col-lg-3">Platform:</dt>
+                <dd class="col-6 col-lg-9">{{ account.account_type.platform }}</dd>
+                <dt class="col-6 col-lg-3">Account type:</dt>
+                <dd class="col-6 col-lg-9">{{ account.account_type.name }}</dd>
+                <dt class="col-6 col-lg-3">Base currency:</dt>
+                <dd class="col-6 col-lg-9">
+                    {{ account.account_type.currency|capfirst }}
+                    ({{ account.account_type.currency.iso_code }})
+                </dd>
+                <dt class="col-6 col-lg-3">Registration date:</dt>
+                <dd class="col-6 col-lg-9">{{ account.get_string_creation_date_time }}</dd>
+            </dl>
+        </div>
+        <div class="col-auto my-2">
+            <button type="button" class="btn btn-danger" data-bs-toggle="modal"
+                    data-bs-target="#delete-account-modal">
+                Delete account
+            </button>
+        </div>
+    </div>
+
+    <!-- Modal for deleting the account -->
+    <div class="modal" id="delete-account-modal" tabindex="-1" aria-labelledby="delete-account-modal-label"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="delete-account-modal-label">Delete Account?</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>
+                        Are you sure you want to delete
+                        <b>{{ account.account_type.name }} ({{ account.account_type.platform }})</b>
+                        from <b>{{ request.user.get_selected_portfolio }}</b>?
+                    </p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <form action="{% url "portfolioapp:account_delete" account.account_type.platform.name account.account_type.name %}" method="post">
+                        {% csrf_token %}
+                        {{ account_delete_form.account }}
+                        <input type="submit" value="Yes, delete" class="btn btn-danger">
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block scripts %}
+
+    <script>
+
+      // Make the rows in the table clickable using jQuery
+      jQuery(document).ready(function ($) {
+        $(".clickable-row").click(function () {
+          window.location = $(this).data("href");
+        });
+      });
+
+    </script>
+
+{% endblock %}

@@ -1,0 +1,53 @@
+{% extends "portfolioapp/base.html" %}
+
+{% block content %}
+
+    <div class="row mt-2">
+        <h1>Add an Investment Account</h1>
+        <form action="{% url "portfolioapp:account_add" %}" method="post"
+              class="col col-md-9 col-lg-6 col-xl-5 bg-light p-3 rounded">
+            {% csrf_token %}
+            <fieldset>
+                <p>Select the platform that hosts your account:</p>
+                {% for radio in select_platform_form.platform %}
+                <div class="form-check">
+                    {{ radio.tag }}
+                    <label class="form-check-label" for="{{ radio.id_for_label }}">
+                        {{ radio.choice_label }}
+                    </label>
+                </div>
+                {% endfor %}
+            </fieldset>
+            <div class="row gx-2 mt-3 justify-content-end">
+                <div class="col-auto">
+                    <a class="btn btn-secondary " href="{% url "portfolioapp:overview" %}">Cancel</a>
+                </div>
+                <div class="col-auto">
+                    <input type="submit" value="Submit" class="btn btn-primary">
+                </div>
+            </div>
+        </form>
+    </div>
+
+{% endblock %}
+
+{% block scripts %}
+
+    <script>
+
+      $(document).ready(function () {
+
+        // Manual override of the select-platform fieldset to implement Bootstrap formatting
+        let radio_fieldset = document.getElementsByTagName("fieldset")[0];
+        let radio_divs = radio_fieldset.getElementsByTagName("div");
+        for (let d = 0; d < radio_divs.length; d++) {
+          let div = radio_divs[d];
+          let input_elem = div.getElementsByTagName("input")[0];
+          input_elem.classList.add("form-check-input")
+        }
+
+      });
+
+    </script>
+
+{% endblock %}

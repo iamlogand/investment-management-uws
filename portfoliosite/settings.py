@@ -30,9 +30,6 @@ INSTALLED_APPS = [
     "allauth",
     "allauth.account",
     "allauth.socialaccount",
-
-    # Option allauth apps
-
 ]
 
 MIDDLEWARE = [
@@ -115,6 +112,9 @@ USE_TZ = True
 STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 STATIC_URL = "/static/"
 
+# Custom user model
+AUTH_USER_MODEL = 'portfolioapp.user'
+
 # Heroku settings
 django_heroku.settings(locals())
 
@@ -122,7 +122,7 @@ django_heroku.settings(locals())
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # Default login page
-LOGIN_REDIRECT_URL = "portfolioapp:home"
+LOGIN_REDIRECT_URL = "portfolioapp:overview"
 
 # allauth specific settings
 ACCOUNT_EMAIL_REQUIRED = True
@@ -130,9 +130,8 @@ ACCOUNT_AUTHENTICATION_METHOD = "email"
 ACCOUNT_USERNAME_REQUIRED = False
 ACCOUNT_EMAIL_VERIFICATION = "mandatory"
 
-
 # Email settings
-DEFAULT_FROM_EMAIL = "no-reply@investment-portfolio-22.herokuapp.com"
+DEFAULT_FROM_EMAIL = "no-reply@investment-management-uws.herokuapp.com"
 
 if os.environ.get("MAILGUN_SMTP_SERVER", "") == "smtp.mailgun.org":
     # Sending real emails in production
@@ -145,7 +144,3 @@ if os.environ.get("MAILGUN_SMTP_SERVER", "") == "smtp.mailgun.org":
 else:
     # Pretending to send emails in development
     EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
-
-
-# Custom user model
-AUTH_USER_MODEL = 'portfolioapp.User'

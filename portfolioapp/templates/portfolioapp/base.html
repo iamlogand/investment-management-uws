@@ -10,12 +10,11 @@
 
     <!-- Stylesheets -->
     <link rel="stylesheet" type="text/css" href="{% static "portfolioapp/style.css" %}"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 
     <!-- Title -->
     <title>Investment Manager</title>
 
-    <!-- Scripts -->
-    <script src="{% static "vendor/jquery/jquery-3.6.0.min.js" %}"></script>
 
 </head>
 <body id="body-with-nav-above">
@@ -32,18 +31,8 @@
         <div class="collapse mt-2 navbar-collapse justify-content-start" id="navbarSupportedContent">
             <ul class="navbar-nav me-auto mb-2 mb-sm-0">
                 <li class="nav-item">
-                    <a class="nav-link" href="{% url "portfolioapp:home" %}" id="home-link">
-                        <span class="">Home</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url "portfolioapp:track" %}" id="track-link">
-                        <span class="">Track</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url "portfolioapp:manage" %}" id="manage-link">
-                        <span class="">Manage</span>
+                    <a class="nav-link" href="{% url "portfolioapp:overview" %}" id="overview-link">
+                        <span class="">Overview</span>
                     </a>
                 </li>
             </ul>
@@ -81,10 +70,12 @@
                     </div>
                 </div>
                 <div class="col-auto mt-2">
-                    <a class="btn bg-white bg-opacity-50 pt-1" href="{% url "portfolioapp:portfolio_list" %}"
-                       id="portfolioButton">
-                        Portfolios
-                    </a>
+                    {% block portfolio_button %}
+                        <a class="btn bg-white bg-opacity-50 pt-1" href="{% url "portfolioapp:portfolio_list" %}"
+                           id="portfolioButton">
+                            All Portfolios
+                        </a>
+                    {% endblock %}
                 </div>
             </div>
         </div>
@@ -97,13 +88,14 @@
 
 </div>
 
-{% block scripts %}{% endblock %}
-
 <!-- JavaScript plugins -->
 <script src="{% static 'vendor/bootstrap/dist/js/bootstrap.bundle.js' %}"></script>
-
-<!-- Font Awesome -->
+<script src="{% static "vendor/jquery/jquery-3.6.0.min.js" %}"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <script src="https://kit.fontawesome.com/b895e44baa.js" crossorigin="anonymous"></script>
+
+<!-- Page-specific scripting -->
+{% block scripts %}{% endblock %}
 
 </body>
 </html>

@@ -1,0 +1,155 @@
+{% extends "portfolioapp/base.html" %}
+
+{% block content %}
+
+    <div class="row mt-2">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <a href="{% url "portfolioapp:portfolio_list" %}">
+                        Portfolios
+                    </a>
+                </li>
+                <li class="breadcrumb-item">
+                    <a href="{% url "portfolioapp:overview" %}">
+                        {{ request.user.get_selected_portfolio }}
+                    </a>
+                </li>
+                <li class="breadcrumb-item" aria-current="page">
+                    <a href="{% url "portfolioapp:investment_account" account.account_type.platform.name account.account_type.name %}">
+                        {{ account.account_type }}
+                    </a>
+                </li>
+                <li class="breadcrumb-item">
+                    Add security purchase
+                </li>
+            </ol>
+        </nav>
+        <form action="{% url "portfolioapp:security_purchase_add" account.account_type.platform.name account.account_type.name %}"
+              method="post" class="col col-md-9 col-lg-6 col-xl-5 bg-light p-3 rounded">
+            <h1>Add a Security Purchase</h1>
+            {% csrf_token %}
+            <fieldset>
+                <span class="text-danger">{{ security_purchase_add_form.date.errors }}</span>
+                <span class="text-danger">{{ security_purchase_add_form.security_amount.errors }}</span>
+                <span class="text-danger">{{ security_purchase_add_form.amount.errors }}</span>
+                <span class="text-danger">{{ security_purchase_add_form.fee.errors }}</span>
+                <span class="text-danger">{{ security_purchase_add_form.tax.errors }}</span>
+                <span class="text-danger">{{ security_purchase_add_form.non_field_errors }}</span>
+                <div class="row">
+                    <div class="col-12 col-sm mb-3">
+                        <label for="{{ security_purchase_add_form.date.id_for_label }}">
+                            Date
+                        </label>
+                        {{ security_purchase_add_form.date }}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12 col-sm-7 mb-3">
+                        <label for="{{ security_purchase_add_form.security.id_for_label }}">
+                            Security bought
+                        </label>
+                        {{ security_purchase_add_form.security }}
+                    </div>
+                    <div class="col-12 col-sm-5 mb-3">
+                        <label for="{{ security_purchase_add_form.security_amount.id_for_label }}">
+                            Quantity bought
+                        </label>
+                        <div class="input-group">
+                            {{ security_purchase_add_form.security_amount }}
+                            <span class="input-group-text">
+                                shares
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12 col-sm mb-3">
+                        <label for="{{ security_purchase_add_form.amount.id_for_label }}">
+                            Total spent (including fees and taxes)
+                        </label>
+                        <div class="input-group">
+                            <span class="input-group-text">
+                                {{ account.account_type.currency.symbol }}
+                            </span>
+                            {{ security_purchase_add_form.amount }}
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12 col-sm mb-3">
+                        <label for="{{ security_purchase_add_form.fee.id_for_label }}">
+                            Spent on fees
+                        </label>
+                        <div class="input-group">
+                            <span class="input-group-text">
+                                {{ account.account_type.currency.symbol }}
+                            </span>
+                            {{ security_purchase_add_form.fee }}
+                        </div>
+                    </div>
+                    <div class="col-12 col-sm mb-3">
+                        <label for="{{ security_purchase_add_form.tax.id_for_label }}">
+                            Spent on taxes
+                        </label>
+                        <div class="input-group">
+                            <span class="input-group-text">
+                                {{ account.account_type.currency.symbol }}
+                            </span>
+                            {{ security_purchase_add_form.tax }}
+                        </div>
+                    </div>
+                </div>
+            </fieldset>
+            <div class="row gx-2 justify-content-end">
+                <div class="col-auto">
+                    <a class="btn btn-secondary "
+                       href="{% url "portfolioapp:investment_account" account.account_type.platform.name account.account_type.name %}">
+                        Cancel
+                    </a>
+                </div>
+                <div class="col-auto">
+                    <input type="submit" value="Submit" class="btn btn-primary">
+                </div>
+            </div>
+        </form>
+    </div>
+
+{% endblock %}
+
+{% block scripts %}
+
+    <script>
+
+      $(document).ready(function () {
+
+        // Implementation of Bootstrap formatting and flatpickr for the date and time picker.
+        let date_elem = document.getElementById("{{ security_purchase_add_form.date.id_for_label }}");
+        date_elem.classList.add("form-control");
+        flatpickr(date_elem, {enableTime: true, enableSeconds: true, allowInput: true});
+
+        // Manual override of the security form field to implement Bootstrap formatting.
+        let security_elem = document.getElementById("{{ security_purchase_add_form.security.id_for_label }}");
+        security_elem.classList.add("form-select");
+
+        // Manual override of the security_amount form field to implement Bootstrap formatting.
+        let security_amount_elem = document.getElementById("{{ security_purchase_add_form.security_amount.id_for_label }}");
+        security_amount_elem.classList.add("form-control");
+
+        // Manual override of the amount form field to implement Bootstrap formatting.
+        let amount_elem = document.getElementById("{{ security_purchase_add_form.amount.id_for_label }}");
+        amount_elem.classList.add("form-control");
+
+        // Manual override of the fee form field to implement Bootstrap formatting.
+        let fee_elem = document.getElementById("{{ security_purchase_add_form.fee.id_for_label }}");
+        fee_elem.classList.add("form-control");
+
+        // Manual override of the fee form field to implement Bootstrap formatting.
+        let tax_elem = document.getElementById("{{ security_purchase_add_form.tax.id_for_label }}");
+        tax_elem.classList.add("form-control");
+
+      });
+
+    </script>
+
+{% endblock %}

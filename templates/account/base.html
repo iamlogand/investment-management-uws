@@ -14,9 +14,6 @@
     <!-- Title -->
     <title>Investment Manager</title>
 
-    <!-- Scripts -->
-    <script src="{% static "vendor/jquery/jquery-3.6.0.min.js" %}"></script>
-
 </head>
 <body>
 <div class="container">
@@ -55,13 +52,12 @@
     </div>
 </div>
 
-{% block scripts %}{% endblock %}
-
 <!-- JavaScript plugins -->
 <script src="{% static 'vendor/bootstrap/dist/js/bootstrap.bundle.js' %}"></script>
-
-<!-- Font Awesome -->
+<script src="{% static "vendor/jquery/jquery-3.6.0.min.js" %}"></script>
 <script src="https://kit.fontawesome.com/b895e44baa.js" crossorigin="anonymous"></script>
 
+<!-- Page-specific scripting -->
+{% block scripts %}{% endblock %}
 </body>
 </html>

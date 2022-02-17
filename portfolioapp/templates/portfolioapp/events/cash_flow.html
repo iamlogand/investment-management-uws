@@ -1,0 +1,86 @@
+{% extends "portfolioapp/base.html" %}
+
+{% block content %}
+
+    <div class="row mt-2">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <a href="{% url "portfolioapp:portfolio_list" %}">
+                        Portfolios
+                    </a>
+                </li>
+                <li class="breadcrumb-item">
+                    <a href="{% url "portfolioapp:overview" %}">
+                        {{ request.user.get_selected_portfolio }}
+                    </a>
+                </li>
+                <li class="breadcrumb-item" aria-current="page">
+                    <a href="{% url "portfolioapp:investment_account" cash_flow.account.account_type.platform.name cash_flow.account.account_type.name %}">
+                        {{ cash_flow.account.account_type }}
+                    </a>
+                </li>
+                <li class="breadcrumb-item">
+                    Event #{{ cash_flow.rank }}: {{ cash_flow.get_medium_desc }}
+                </li>
+            </ol>
+        </nav>
+        <div class="col col-md-10 col-lg-8 col-xl-6 rounded bg-light p-3">
+            <h1 class="mb-3">
+                {{ cash_flow.get_long_desc|capfirst }}
+            </h1>
+            <dl class="row px-1">
+                <dt class="col-5">Account:</dt>
+                <dd class="col-7">{{ cash_flow.account.account_type }}</dd>
+                <dt class="col-5">Date:</dt>
+                <dd class="col-7">{{ cash_flow.get_string_date_time }}</dd>
+                <dt class="col-5">Type:</dt>
+                <dd class="col-7">
+                    {{ cash_flow.get_short_desc|capfirst }}
+                </dd>
+                <dt class="col-5">Amount:</dt>
+                <dd class="col-7">{{ cash_flow.get_string_positivised_amount_iso }}</dd>
+            </dl>
+            {% if cash_flow == cash_flow.account.get_most_recent_event %}
+                <div class="row justify-content-end">
+                    <div class="col-auto">
+                        <button type="button" class="btn btn-danger" data-bs-toggle="modal"
+                                data-bs-target="#delete-cash-flow-modal">Delete Event
+                        </button>
+                    </div>
+                </div>
+            {% else %}
+                <p>Note: only the most recent event can be deleted.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Modal for deleting the cash flow -->
+    <div class="modal" id="delete-cash-flow-modal" tabindex="-1" aria-labelledby="delete-cash-flow-modal-label"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="delete-cash-flow-modal-label">Delete Cash Flow Event?</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>
+                        Are you sure you want to delete
+                        <b>{{ cash_flow.get_long_desc }}</b>
+                        from <b>{{ cash_flow.account.account_type }}</b>?
+                    </p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <form action="{% url "portfolioapp:event_delete" cash_flow.account.account_type.platform.name cash_flow.account.account_type.name cash_flow.rank %}" method="post">
+                        {% csrf_token %}
+                        {{ event_delete_form.event }}
+                        <input type="submit" value="Yes, delete" class="btn btn-danger">
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
