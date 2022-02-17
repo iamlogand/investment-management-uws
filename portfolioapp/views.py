@@ -2,9 +2,9 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 
-from portfolioapp.models import *
 from portfoliosite.views import custom_404
 from portfolioapp.forms import *
+from portfolioapp.tasks import activate_quote_gen
 
 
 @login_required
@@ -226,6 +226,9 @@ def account_add_view(request):
 @login_required()
 def account_view(request, platform_name, account_type_name):
     try:
+        # Activate the background task
+        activate_quote_gen()
+
         # Find the investment account that matches the user, selected portfolio, platform and account type.
         investment_account = get_investment_account(request.user, platform_name, account_type_name)
         account_id = investment_account.id

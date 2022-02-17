@@ -85,7 +85,7 @@ class CurrencyAdmin(admin.ModelAdmin):
 
 @admin.register(Security)
 class SecurityAdmin(admin.ModelAdmin):
-    list_display = ("name", "ISIN")
+    list_display = ("name", "ISIN", "yahoo_id")
 
 
 @admin.register(SecurityQuote)
