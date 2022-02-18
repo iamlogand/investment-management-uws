@@ -292,10 +292,11 @@ class SecuritySaleAddForm(forms.Form):
         except KeyError:
             raise ValidationError("There are no securities to sell in this investment account.")
         # if owned and securities_amount:
-        if security_amount > owned:
-            sec_name = owned_securities_dict[securityISIN]["name"]
-            error_string = "There are only {} shares of {} available to sell in this investment account.".format(owned, sec_name)
-            raise ValidationError(error_string)
+        if security_amount:
+            if security_amount > owned:
+                sec_name = owned_securities_dict[securityISIN]["security"].name
+                error_string = "There are only {} shares of {} available to sell in this investment account.".format(owned, sec_name)
+                raise ValidationError(error_string)
 
         return cleaned_data
 
