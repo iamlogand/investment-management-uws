@@ -4,3 +4,5 @@ django-heroku
 django-allauth
 yahoo_fin
 django-environ
+celery
+eventlet

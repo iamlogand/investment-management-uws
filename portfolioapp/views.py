@@ -4,7 +4,7 @@ from django.shortcuts import render
 
 from portfoliosite.views import custom_404
 from portfolioapp.forms import *
-from portfolioapp.tasks import activate_quote_gen
+from .tasks import refresh_quotes
 
 
 @login_required
@@ -226,8 +226,8 @@ def account_add_view(request):
 @login_required()
 def account_view(request, platform_name, account_type_name):
     try:
-        # Activate the background task
-        activate_quote_gen()
+        # call task
+        refresh_quotes.delay()
 
         # Find the investment account that matches the user, selected portfolio, platform and account type.
         investment_account = get_investment_account(request.user, platform_name, account_type_name)

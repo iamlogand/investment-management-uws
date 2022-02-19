@@ -18,7 +18,7 @@ else:
     SECRET_KEY = env("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = []
 
@@ -153,3 +153,8 @@ else:
     # Pretending to send emails in development
     EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 
+# Celery settings
+if os.environ.get("CLOUDAMQP_URL", ""):
+    CELERY_BROKER_URL = os.environ.get("CLOUDAMQP_URL", "")
+else:
+    CELERY_BROKER_URL = env("CELERY_BROKER_URL")
