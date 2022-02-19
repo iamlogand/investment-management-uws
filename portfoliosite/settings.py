@@ -154,8 +154,7 @@ else:
     EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 
 # Celery settings
-if os.environ.get("CLOUDAMQP_URL", ""):
-    CELERY_BROKER_URL = os.environ.get("CLOUDAMQP_URL", "")
+if os.environ.get("REDIS_URL", ""):
+    CELERY_BROKER_URL = os.environ.get("REDIS_URL", "")
 else:
-    CELERY_BROKER_URL = env("CELERY_BROKER_URL")
-CELERY_BROKER_POOL_LIMIT = 1
+    CELERY_BROKER_URL = env("RABBITMQURL")
