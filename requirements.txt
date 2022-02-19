@@ -4,6 +4,6 @@ django-heroku
 django-allauth
 yahoo_fin
 django-environ
-setuptools
+redis
 celery
 eventlet
