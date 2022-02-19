@@ -9,6 +9,7 @@ from .tasks import refresh_quotes
 
 @login_required
 def overview_view(request):
+
     try:
         portfolio = request.user.get_selected_portfolio()
         return render(request, "portfolioapp/overview.html", {"portfolio": portfolio})
@@ -226,12 +227,14 @@ def account_add_view(request):
 @login_required()
 def account_view(request, platform_name, account_type_name):
     try:
-        # call task
-        refresh_quotes.delay()
 
         # Find the investment account that matches the user, selected portfolio, platform and account type.
         investment_account = get_investment_account(request.user, platform_name, account_type_name)
         account_id = investment_account.id
+
+        # Potentially refresh security quotes (Celery background task)
+        refresh_quotes.delay()
+
 
         account_delete_form = AccountDeleteForm(account_id=account_id)
         return render(request, "portfolioapp/account.html", {"account": investment_account,

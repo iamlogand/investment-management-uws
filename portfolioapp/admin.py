@@ -101,3 +101,8 @@ class CashFlowAdmin(admin.ModelAdmin):
 @admin.register(SecurityTrade)
 class SecurityTradeAdmin(admin.ModelAdmin):
     list_display = ("rank", "currency", "amount", "security", "security_amount", "date", "account")
+
+
+@admin.register(QuoteManager)
+class QuoteManagerAdmin(admin.ModelAdmin):
+    list_display = ("name", "active", "period", "last_quote_refresh")

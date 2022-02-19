@@ -213,9 +213,12 @@ class InvestmentAccount(models.Model):
 
         for sec_ent in sec_amounts_list:
             latest_quote = sec_amounts_list[sec_ent]["security"].get_latest_quote()
-            sec_amounts_list[sec_ent]["latest_quote"] = latest_quote
-            sec_amounts_list[sec_ent]["latest_value"] = latest_quote.get_string_value_iso(
-                quantity=sec_amounts_list[sec_ent]["shares_owned"])
+            if latest_quote:
+                sec_amounts_list[sec_ent]["latest_quote"] = latest_quote
+                sec_amounts_list[sec_ent]["latest_value"] = latest_quote.get_string_value_iso(
+                    quantity=sec_amounts_list[sec_ent]["shares_owned"])
+            else:
+                sec_amounts_list[sec_ent]["latest_quote"] = None
 
         return sec_amounts_list
 
@@ -226,7 +229,10 @@ class InvestmentAccount(models.Model):
 
     # Returns a list of securities with each entity represented as a dictionary.
     def get_securities_list(self):
-        return list(self.get_owned_securities_dict().values())
+        if self.get_owned_securities_dict():
+            return list(self.get_owned_securities_dict().values())
+        else:
+            return None
 
 
 class Security(models.Model):
@@ -244,8 +250,7 @@ class Security(models.Model):
         try:
             return SecurityQuote.objects.filter(security=self).order_by("-datetime")[0]
         except IndexError:
-            raise Exception("Can't find price: " + self.name + " (" + self.ISIN +
-                            ") has no related SecurityQuote instances.")
+            return None
 
 
 class SecurityQuote(models.Model):
@@ -397,3 +402,22 @@ class SecurityTrade(AccountingEvent):
     def get_string_tax(self):
         tax_amount_string = "{0:.2f}".format(self.tax)
         return tax_amount_string
+
+
+class QuoteManager(models.Model):
+    name = models.CharField(max_length=50)
+    active = models.BooleanField()
+    period = models.IntegerField()
+    last_quote_refresh = models.DateTimeField()
+
+    # Overwrite the save method to make sure only one queue manager can be active
+    def save(self, *args, **kwargs):
+        if self.active:
+            try:
+                temp = QuoteManager.objects.get(active=True)
+                if self != temp:
+                    temp.active = False
+                    temp.save()
+            except QuoteManager.DoesNotExist:
+                pass
+        super(QuoteManager, self).save(*args, **kwargs)
