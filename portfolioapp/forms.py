@@ -1,6 +1,7 @@
 import decimal
 from django.core.exceptions import ValidationError
 from django import forms
+from django.utils import timezone as django_timezone
 
 from .models import *
 
@@ -104,7 +105,7 @@ class EventDeleteForm(forms.Form):
 
 class CashDepositAddForm(forms.Form):
     amount = forms.FloatField()
-    date = forms.DateTimeField(initial=timezone.now())
+    date = forms.DateTimeField(initial=django_timezone.now())
 
     def __init__(self, *args, **kwargs):
         account = kwargs.pop("investment_account")
@@ -132,7 +133,7 @@ class CashDepositAddForm(forms.Form):
 
 class CashWithdrawalAddForm(forms.Form):
     amount = forms.FloatField()
-    date = forms.DateTimeField(initial=timezone.now())
+    date = forms.DateTimeField(initial=django_timezone.now())
 
     def __init__(self, *args, **kwargs):
         account = kwargs.pop("investment_account")
@@ -169,7 +170,7 @@ class SecurityPurchaseAddForm(forms.Form):
     security = forms.ChoiceField(choices=[None])
     security_amount = forms.FloatField()
     amount = forms.FloatField()
-    date = forms.DateTimeField(initial=timezone.now())
+    date = forms.DateTimeField(initial=django_timezone.now())
     fee = forms.FloatField(initial=0)
     tax = forms.FloatField(initial=0)
 
@@ -262,7 +263,7 @@ class SecuritySaleAddForm(forms.Form):
     security = forms.ChoiceField(choices=[None])
     security_amount = forms.FloatField()
     amount = forms.FloatField()
-    date = forms.DateTimeField(initial=timezone.now())
+    date = forms.DateTimeField(initial=django_timezone.now())
     fee = forms.FloatField(initial=0)
     tax = forms.FloatField(initial=0)
 
@@ -383,7 +384,7 @@ def check_event_date(date_data, investment_account):
         raise ValidationError(error_string)
 
     # Check that the date isn't in the future.
-    if date_data > timezone.now():
+    if date_data > django_timezone.now():
         raise ValidationError("This event can't take place in the future.")
 
     return date_data
