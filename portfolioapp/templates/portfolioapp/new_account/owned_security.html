@@ -1,0 +1,80 @@
+{% extends "portfolioapp/base.html" %}
+
+{% block content %}
+
+    <div class="row mt-2">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <a href="{% url "portfolioapp:portfolio_list" %}">
+                        Portfolios
+                    </a>
+                </li>
+                <li class="breadcrumb-item">
+                    <a href="{% url "portfolioapp:overview" %}">
+                        {{ request.user.get_selected_portfolio }}
+                    </a>
+                </li>
+                <li class="breadcrumb-item" aria-current="page">
+                    <a href="{% url "portfolioapp:investment_account" investment_account.account_type.platform.name investment_account.account_type.name %}">
+                        {{ investment_account.account_type }}
+                    </a>
+                </li>
+                <li class="breadcrumb-item">
+                    {{ owned_security.security.name }}
+                </li>
+            </ol>
+        </nav>
+        <h4 class="text-muted">
+            Owned security in {{ investment_account.account_type }}
+        </h4>
+        <h1 class="mb-3">
+            {{ owned_security.security.name }}, ISIN: {{ owned_security.security.ISIN }}
+        </h1>
+        <hr>
+        <div class="col">
+            <h3 class="mb-3">Summary</h3>
+            <dl class="row">
+                <dt class="col-6 col-lg-3">Latest price</dt>
+                <dd class="col-6 col-lg-9">{{ owned_security.latest_quote.get_string_price_iso }}</dd>
+                <dt class="col-6 col-lg-3">Price updated</dt>
+                <dd class="col-6 col-lg-9">{{ owned_security.latest_quote.get_string_datetime }}</dd>
+                <dt class="col-6 col-lg-3">Shares owned</dt>
+                <dd class="col-6 col-lg-9">{{ owned_security.shares_owned }}</dd>
+                <dt class="col-6 col-lg-3">Value</dt>
+                <dd class="col-6 col-lg-9">{{ owned_security.latest_value_str }}</dd>
+            </dl>
+        </div>
+        <hr>
+        <div class="col-12 col-lg-6">
+            <h3 class="mb-3">Recent Spending</h3>
+            <p>Spending after the investment account last held no shares of this security.</p>
+            <dl class="row">
+                <dt class="col-6">Total spent</dt>
+                <dd class="col-6">{{ owned_security.recent_total_spent }}</dd>
+                <dt class="col-6">Spent on the security</dt>
+                <dd class="col-6">{{ owned_security.recent_total_amount }}</dd>
+                <dt class="col-6">Spent on fees</dt>
+                <dd class="col-6">{{ owned_security.recent_fees }}</dd>
+                <dt class="col-6">Spent on taxes</dt>
+                <dd class="col-6">{{ owned_security.recent_taxes }}</dd>
+            </dl>
+        </div>
+        <hr class="d-block d-lg-none">
+        <div class="col-12 col-lg-6">
+            <h3 class="mb-3">Historic Returns</h3>
+            <p>Trading before the investment account last held no shares of this security.</p>
+            <dl class="row">
+                <dt class="col-6">Net profit</dt>
+                <dd class="col-6">{{ owned_security.historic_profit_str }}</dd>
+                <dt class="col-6">Trading revenue</dt>
+                <dd class="col-6">{{ owned_security.historic_revenue }}</dd>
+                <dt class="col-6">Spent on fees</dt>
+                <dd class="col-6">{{ owned_security.historic_fees }}</dd>
+                <dt class="col-6">Spent on taxes</dt>
+                <dd class="col-6">{{ owned_security.historic_taxes }}</dd>
+            </dl>
+        </div>
+    </div>
+
+{% endblock %}

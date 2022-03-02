@@ -30,30 +30,30 @@
                 {{ security_trade.get_long_desc|capfirst }}
             </h1>
             <dl class="row px-1">
-                <dt class="col-5">Account:</dt>
+                <dt class="col-5">Account</dt>
                 <dd class="col-7">{{ security_trade.account.account_type }}</dd>
-                <dt class="col-5">Date:</dt>
+                <dt class="col-5">Date</dt>
                 <dd class="col-7">{{ security_trade.get_string_date_time }}</dd>
-                <dt class="col-5">Type:</dt>
+                <dt class="col-5">Type</dt>
                 <dd class="col-7">
                     {{ security_trade.get_short_desc|capfirst }}
                 </dd>
-                <dt class="col-5">Security:</dt>
+                <dt class="col-5">Security</dt>
                 <dd class="col-7">{{ security_trade.security.name }}</dd>
-                <dt class="col-5">Shares:</dt>
+                <dt class="col-5">Shares</dt>
                 <dd class="col-7">{{ security_trade.get_positivised_security_amount }}</dd>
 
                 {% if security_trade.amount < 0 %}
-                <dt class="col-5">Spent:</dt>
+                <dt class="col-5">Spent</dt>
                 {% else %}
-                <dt class="col-5">Received:</dt>
+                <dt class="col-5">Received</dt>
                 {% endif %}
                 <dd class="col-7">{{ security_trade.get_string_positivised_amount_iso }}</dd>
 
-                <dt class="col-5">Fee:</dt>
-                <dd class="col-7">{{ security_trade.get_string_fee }}</dd>
-                <dt class="col-5">Tax:</dt>
-                <dd class="col-7">{{ security_trade.get_string_tax }}</dd>
+                <dt class="col-5">Fee</dt>
+                <dd class="col-7">{{ security_trade.get_string_fee_iso }}</dd>
+                <dt class="col-5">Tax</dt>
+                <dd class="col-7">{{ security_trade.get_string_tax_iso }}</dd>
             </dl>
             {% if security_trade == security_trade.account.get_most_recent_event %}
                 <div class="row justify-content-end">

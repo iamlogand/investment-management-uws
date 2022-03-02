@@ -404,6 +404,7 @@ def cash_withdrawal_add_view(request, platform_name, account_type_name):
         return custom_404(request)
 
 
+@login_required()
 def security_purchase_add_view(request, platform_name, account_type_name):
     try:
         investment_account = get_investment_account(request.user, platform_name, account_type_name)
@@ -449,6 +450,7 @@ def security_purchase_add_view(request, platform_name, account_type_name):
         return custom_404(request)
 
 
+@login_required()
 def security_sale_add_view(request, platform_name, account_type_name):
     try:
         investment_account = get_investment_account(request.user, platform_name, account_type_name)
@@ -491,6 +493,26 @@ def security_sale_add_view(request, platform_name, account_type_name):
     except (Portfolio.DoesNotExist, Platform.DoesNotExist, InvestmentAccountType.DoesNotExist,
             InvestmentAccount.DoesNotExist):
         return custom_404(request)
+
+
+@login_required()
+def owned_security_view(request, platform_name, account_type_name, isin):
+
+    # Find the investment account that matches the user, selected portfolio and platform.
+    try:
+        investment_account = get_investment_account(request.user, platform_name, account_type_name)
+    except (Portfolio.DoesNotExist, Platform.DoesNotExist, InvestmentAccountType.DoesNotExist,
+            InvestmentAccount.DoesNotExist):
+        return custom_404(request)
+
+    # Find the security in the list of owned securities
+    try:
+        owned_security = investment_account.get_securities_dict()[isin]
+    except KeyError:
+        return custom_404(request)
+
+    return render(request, "portfolioapp/new_account/owned_security.html", {"investment_account": investment_account,
+                                                                            "owned_security": owned_security})
 
 
 # Get the investment account

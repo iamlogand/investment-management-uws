@@ -136,7 +136,7 @@ LOGIN_REDIRECT_URL = "portfolioapp:overview"
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_AUTHENTICATION_METHOD = "email"
 ACCOUNT_USERNAME_REQUIRED = False
-ACCOUNT_EMAIL_VERIFICATION = "none" # Temporarily set to none
+ACCOUNT_EMAIL_VERIFICATION = "none"  # Temporarily set to none
 
 # Email settings
 DEFAULT_FROM_EMAIL = "no-reply@investment-management-uws.herokuapp.com"

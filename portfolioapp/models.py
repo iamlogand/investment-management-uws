@@ -133,9 +133,8 @@ class InvestmentAccount(models.Model):
         investment_account = cls(portfolio=portfolio, creation_date=now, account_type=account_type)
         return investment_account
 
-    # Returns a list of events with each entity represented as a dictionary.
-    def get_events_list(self):
-        events = Event.objects.filter(account=self).values("rank").order_by("-rank")
+    # Turns queryset of events into a useful list of dictionaries
+    def turn_events_queryset_to_list(self, events):
         list_out = []
         for event in events:
             rank = event["rank"]
@@ -144,6 +143,16 @@ class InvestmentAccount(models.Model):
                             "type": event_.type}
             list_out.append(custom_event)
         return list_out
+
+    # Returns a comprehensive list of events with each entity represented as a dictionary.
+    def get_events_list(self):
+        events = Event.objects.filter(account=self).values("rank").order_by("-rank")
+        return self.turn_events_queryset_to_list(events)
+
+    # Returns a list of the 10 most recent events
+    def get_recent_events_list(self):
+        events = Event.objects.filter(account=self).values("rank").order_by("-rank")[:10]
+        return self.turn_events_queryset_to_list(events)
 
     # Returns the most recent event.
     def get_most_recent_event(self):
@@ -168,11 +177,22 @@ class InvestmentAccount(models.Model):
         return balance
 
     # Returns the cash balance as a string. Plus sign is disabled because cash balance must be positive.
-    def get_string_cash_balance(self, plus_sign=False):
+    def get_string_cash_balance(self):
         balance = self.get_cash_balance()
-        string_out = "{0}{1}{2:.2f}".format(get_number_sign(balance, plus_sign=plus_sign),
-                                            self.account_type.currency.symbol, positivise_number(balance))
+        string_out = "{1:.2f} {2}".format(balance, positivise_number(balance), self.account_type.currency.iso_code)
         return string_out
+
+    # Returns the net cash flow
+    def get_net_cash_flow(self):
+        cash_flow_events = CashFlow.objects.filter(account=self)
+        net_cash_flow = 0
+        for cash_flow in cash_flow_events:
+            net_cash_flow += cash_flow.amount
+        return net_cash_flow
+
+    # Returns the net cash flow as a string
+    def get_net_cash_flow_str(self):
+        return "{0:.2f} {1}".format(self.get_net_cash_flow(), self.account_type.currency.iso_code)
 
     # Returns the creation date and time as a string.
     def get_string_creation_date_time(self):
@@ -182,7 +202,18 @@ class InvestmentAccount(models.Model):
     # "security": Security instance
     # "shares_owned": float of quantity owned
     # "latest_quote": SecurityQuote instance
-    def get_owned_securities_dict(self):
+    # "latest_value": quantity multiplied by quote
+    # "latest_value_str": ^ but string
+    # "recent_total_spent": total amount spent, including fees and taxes, since last time 0 shares held
+    # "recent_total_amount": total amount spent on the security, since last time 0 shares held
+    # "recent_fees": total amount spent on fees, since last time 0 shares held
+    # "recent_taxes": total amount spent on taxes, since last time 0 shares held
+    # "historic_profit": net profit, including fees and taxes, before last time 0 shares held
+    # "historic_profit_str": ^ but string
+    # "historic_revenue": trading revenue, before last time 0 shares held
+    # "historic_fees": total amount spent on fees, before last time 0 shares held
+    # "historic_taxes": total amount spent on taxes, before last time 0 shares held
+    def get_securities_dict(self):
         all_events = self.get_events_list()
 
         sec_event_ranks = []
@@ -199,23 +230,70 @@ class InvestmentAccount(models.Model):
                 sec_amounts_list[sec_event.security.ISIN] = {"shares_owned": sec_event.security_amount,
                                                              "security": sec_event.security}
 
-        non_owned = []
         for sec_ent in sec_amounts_list:
+            int_shares = sec_amounts_list[sec_ent]["shares_owned"]
             if sec_amounts_list[sec_ent]["shares_owned"] == 0:
-                non_owned.append(sec_ent)
-            else:
-                int_shares = sec_amounts_list[sec_ent]["shares_owned"]
-                if int_shares % 1 == 0:
-                    sec_amounts_list[sec_ent]["shares_owned"] = int(int_shares)
+                pass
+            elif int_shares % 1 == 0:
+                sec_amounts_list[sec_ent]["shares_owned"] = int(int_shares)
 
-        for sec_to_remove in non_owned:
-            sec_amounts_list.pop(sec_to_remove)
+            # Get the lots of useful info about each security
+            sec_ent_events = security_events.filter(security=sec_amounts_list[sec_ent]["security"])
+            running_sec_amount = 0
+            recent_total_spent = 0
+            recent_fees = 0
+            recent_taxes = 0
+            historic_revenue = 0
+            historic_fees = 0
+            historic_taxes = 0
+            for trade_event in sec_ent_events:
+                running_sec_amount += trade_event.security_amount
+                historic_revenue += trade_event.amount
+                historic_fees += trade_event.fee
+                historic_taxes += trade_event.tax
+                if running_sec_amount != 0:
+                    recent_total_spent += trade_event.amount
+                    recent_fees += trade_event.fee
+                    recent_taxes += trade_event.tax
+                else:
+                    recent_total_spent = 0
+                    recent_fees = 0
+                    recent_taxes = 0
+            recent_total_spent = positivise_number(recent_total_spent)
+            historic_revenue = positivise_number(historic_revenue) - recent_total_spent
+            historic_fees -= recent_fees
+            historic_taxes -= recent_taxes
+            historic_profit = historic_revenue - historic_fees - historic_taxes
 
-        for sec_ent in sec_amounts_list:
+            sec_amounts_list[sec_ent]["recent_total_spent"] = "{0:.2f} {1}".format(
+                positivise_number(recent_total_spent + recent_fees + recent_taxes),
+                self.account_type.currency.iso_code)
+            sec_amounts_list[sec_ent]["recent_total_amount"] = "{0:.2f} {1}".format(
+                positivise_number(recent_total_spent),
+                self.account_type.currency.iso_code)
+            sec_amounts_list[sec_ent]["recent_fees"] = "{0:.2f} {1}".format(recent_fees,
+                                                                            self.account_type.currency.iso_code)
+            sec_amounts_list[sec_ent]["recent_taxes"] = "{0:.2f} {1}".format(recent_taxes,
+                                                                             self.account_type.currency.iso_code)
+            sec_amounts_list[sec_ent]["historic_profit"] = historic_profit
+            sec_amounts_list[sec_ent]["historic_profit_str"] = "{0} {1:.2f} {2}".format(
+                get_number_sign(historic_profit), positivise_number(historic_profit),
+                self.account_type.currency.iso_code)
+            sec_amounts_list[sec_ent]["historic_revenue"] = "{0} {1:.2f} {2}".format(
+                get_number_sign(historic_revenue), positivise_number(historic_revenue),
+                self.account_type.currency.iso_code)
+            sec_amounts_list[sec_ent]["historic_fees"] = "{0:.2f} {1}".format(historic_fees,
+                                                                              self.account_type.currency.iso_code)
+            sec_amounts_list[sec_ent]["historic_taxes"] = "{0:.2f} {1}".format(historic_taxes,
+                                                                               self.account_type.currency.iso_code)
+
+            # Get the latest quote (object) and value (string) for each security
             latest_quote = sec_amounts_list[sec_ent]["security"].get_latest_quote()
             if latest_quote:
                 sec_amounts_list[sec_ent]["latest_quote"] = latest_quote
-                sec_amounts_list[sec_ent]["latest_value"] = latest_quote.get_string_value_iso(
+                sec_amounts_list[sec_ent]["latest_value"] = latest_quote.price * \
+                    sec_amounts_list[sec_ent]["shares_owned"]
+                sec_amounts_list[sec_ent]["latest_value_str"] = latest_quote.get_string_value_iso(
                     quantity=sec_amounts_list[sec_ent]["shares_owned"])
             else:
                 sec_amounts_list[sec_ent]["latest_quote"] = None
@@ -224,15 +302,58 @@ class InvestmentAccount(models.Model):
 
     # Returns a list of ISINs for securities in this investment account.
     def get_owned_securities(self):
-        sec_owned_ISINs = list(self.get_owned_securities_dict().keys())
+        sec_owned_ISINs = list(self.get_securities_dict().keys())
         return Security.objects.filter(ISIN__in=sec_owned_ISINs)
 
     # Returns a list of securities with each entity represented as a dictionary.
-    def get_securities_list(self):
-        if self.get_owned_securities_dict():
-            return list(self.get_owned_securities_dict().values())
+    def get_owned_securities_list(self):
+        if self.get_securities_dict():
+            all_securities_list = self.get_securities_dict()
+            owned_securities = {}
+            for sec in all_securities_list:
+                if all_securities_list[sec]["shares_owned"]:
+                    owned_securities[sec] = all_securities_list[sec]
+            return list(owned_securities.values())
         else:
             return None
+
+    # Returns total value of owned securities
+    def get_value_owned_securities(self):
+        if self.get_securities_dict():
+            all_securities_list = self.get_securities_dict()
+            total_value = 0
+            for sec in all_securities_list:
+                if all_securities_list[sec]["shares_owned"]:
+                    total_value += all_securities_list[sec]["latest_value"]
+            return total_value
+        else:
+            return 0
+
+    # Returns total value of owned securities as a string
+    def get_value_owned_securities_str(self):
+        return "{0:.2f} {1}".format(self.get_value_owned_securities(), self.account_type.currency.iso_code)
+
+    # Returns total balance
+    def get_total_balance(self):
+        amount_out = self.get_value_owned_securities() + self.get_cash_balance()
+        return "{0:.2f} {1}".format(amount_out, self.account_type.currency.iso_code)
+
+    # Returns total historic profit
+    def get_total_historic_profit(self):
+        if self.get_securities_dict():
+            all_securities_list = self.get_securities_dict()
+            total_historic_profit = 0
+            for sec in all_securities_list:
+                total_historic_profit += all_securities_list[sec]["historic_profit"]
+            return total_historic_profit
+        else:
+            return 0
+
+    # Returns total historic profit as a string
+    def get_total_historic_profit_str(self):
+        return "{0} {1:.2f} {2}".format(get_number_sign(self.get_total_historic_profit()),
+                                        positivise_number(self.get_total_historic_profit()),
+                                        self.account_type.currency.iso_code)
 
 
 class Security(models.Model):
@@ -398,10 +519,20 @@ class SecurityTrade(AccountingEvent):
         fee_amount_string = "{0:.2f}".format(self.fee)
         return fee_amount_string
 
+    # Returns the fee as a string.
+    def get_string_fee_iso(self):
+        string_out = "{} {}".format(self.get_string_fee(), self.currency.iso_code)
+        return string_out
+
     # Returns the tax as a string.
     def get_string_tax(self):
         tax_amount_string = "{0:.2f}".format(self.tax)
         return tax_amount_string
+
+    # Returns the tax as a string.
+    def get_string_tax_iso(self):
+        string_out = "{} {}".format(self.get_string_tax(), self.currency.iso_code)
+        return string_out
 
 
 class QuoteManager(models.Model):

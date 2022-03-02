@@ -27,10 +27,23 @@
         <p>Here you will be able to see details about this investment account.</p>
         <hr>
         <div class="col-12 col-lg">
-            <h3>Summary</h3>
+            <h2>Summary</h2>
+            <p>Here the assets and performance is summarised.</p>
+            <h4>Assets</h4>
             <dl class="row">
-                <dt class="col-6">Cash balance:</dt>
+                <dt class="col-6">Total balance</dt>
+                <dd class="col-6">{{ account.get_total_balance }}</dd>
+                <dt class="col-6">Owned securities value</dt>
+                <dd class="col-6">{{ account.get_value_owned_securities_str }}</dd>
+                <dt class="col-6">Cash balance</dt>
                 <dd class="col-6">{{ account.get_string_cash_balance }}</dd>
+                <dt class="col-6">Net cash in</dt>
+                <dd class="col-6">{{ account.get_net_cash_flow_str }}</dd>
+            </dl>
+            <h4>Performance</h4>
+            <dl class="row">
+                <dt class="col-6">Historic net profit</dt>
+                <dd class="col-6">{{ account.get_total_historic_profit_str }}</dd>
             </dl>
         </div>
         <hr class="d-block d-lg-none">
@@ -73,7 +86,7 @@
                     </ul>
                 </div>
             </div>
-            {% if account.get_events_list %}
+            {% if account.get_recent_events_list %}
                 <p class="mb-2">
                     <span class="d-sm-none">Tap</span>
                     <span class="d-none d-sm-inline-flex ">Click</span>
@@ -89,11 +102,11 @@
                             </tr>
                         </thead>
                         <tbody>
-                            {% for event in account.get_events_list %}
+                            {% for event in account.get_recent_events_list %}
                             <tr class="clickable-row"
                                 data-href="{% url "portfolioapp:event" account.account_type.platform.name account.account_type.name event.rank %}">
                                 <td>{{ event.rank }}</td>
-                                <td>{{ event.date }}</td>
+                                <td class="text-nowrap">{{ event.date }}</td>
                                 <td>{{ event.description|capfirst }}</td>
                             </tr>
                             {% endfor %}
@@ -107,34 +120,34 @@
         <hr>
         <div class="col">
             <h3 class="my-0">Owned Securities</h3>
-            {% if account.get_securities_list %}
+            {% if account.get_owned_securities_list %}
                 <p class="mb-2">
                     <span class="d-sm-none">Tap</span>
                     <span class="d-none d-sm-inline-flex ">Click</span>
-                    a security to view more details. (coming soon)
+                    a security to view more details.
                 </p>
                 <div class="table-responsive">
                     <table class="table align-middle table-hover">
                         <thead>
                             <tr>
                                 <th scope="col">Name</th>
-                                <th scope="col">ISIN</th>
                                 <th scope="col">Price</th>
                                 <th scope="col">Updated</th>
                                 <th scope="col">Shares owned</th>
                                 <th scope="col">Value</th>
+                                <th scope="col">Total spent</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {% for owned_security in account.get_securities_list %}
+                            {% for owned_security in account.get_owned_securities_list %}
                             <tr class="clickable-row"
-                                data-href="#">
+                                data-href="{% url "portfolioapp:owned_security" account.account_type.platform.name account.account_type.name owned_security.security.ISIN %}">
                                 <td>{{ owned_security.security.name }}</td>
-                                <td class="font-monospace">{{ owned_security.security.ISIN }}</td>
                                 <td>{{ owned_security.latest_quote.get_string_price_iso }}</td>
                                 <td>{{ owned_security.latest_quote.get_string_datetime }}</td>
                                 <td>{{ owned_security.shares_owned }}</td>
-                                <td>{{ owned_security.latest_value }}</td>
+                                <td>{{ owned_security.latest_value_str }}</td>
+                                <td>{{ owned_security.recent_total_spent }}</td>
                             </tr>
                             {% endfor %}
                         </tbody>
@@ -148,16 +161,16 @@
         <h3>Details</h3>
         <div class="col-12">
             <dl class="row">
-                <dt class="col-6 col-lg-3">Platform:</dt>
+                <dt class="col-6 col-lg-3">Platform</dt>
                 <dd class="col-6 col-lg-9">{{ account.account_type.platform }}</dd>
-                <dt class="col-6 col-lg-3">Account type:</dt>
+                <dt class="col-6 col-lg-3">Account type</dt>
                 <dd class="col-6 col-lg-9">{{ account.account_type.name }}</dd>
-                <dt class="col-6 col-lg-3">Base currency:</dt>
+                <dt class="col-6 col-lg-3">Base currency</dt>
                 <dd class="col-6 col-lg-9">
                     {{ account.account_type.currency|capfirst }}
                     ({{ account.account_type.currency.iso_code }})
                 </dd>
-                <dt class="col-6 col-lg-3">Registration date:</dt>
+                <dt class="col-6 col-lg-3">Registration date</dt>
                 <dd class="col-6 col-lg-9">{{ account.get_string_creation_date_time }}</dd>
             </dl>
         </div>

@@ -28,4 +28,6 @@ urlpatterns = [
          views.security_purchase_add_view, name="security_purchase_add"),
     path("investment-accounts/<str:platform_name>/<str:account_type_name>/events/add-security-sale/",
          views.security_sale_add_view, name="security_sale_add"),
+    path("investment-accounts/<str:platform_name>/<str:account_type_name>/securities/<str:isin>/",
+         views.owned_security_view, name="owned_security"),
 ]
