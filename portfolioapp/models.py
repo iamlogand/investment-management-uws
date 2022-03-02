@@ -260,7 +260,7 @@ class InvestmentAccount(models.Model):
                     recent_fees = 0
                     recent_taxes = 0
             recent_total_spent = positivise_number(recent_total_spent)
-            historic_revenue = positivise_number(historic_revenue) - recent_total_spent
+            historic_revenue -= recent_total_spent
             historic_fees -= recent_fees
             historic_taxes -= recent_taxes
             historic_profit = historic_revenue - historic_fees - historic_taxes
