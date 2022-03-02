@@ -284,7 +284,7 @@ class SecuritySaleAddForm(forms.Form):
         cleaned_data = super().clean()
 
         # Check that the quantity of shares sold is no more than there are owned
-        owned_securities_dict = self.investment_account.get_owned_securities_dict()
+        owned_securities_dict = self.investment_account.get_securities_dict()
         security_amount = cleaned_data.get("security_amount")
         securityISIN = cleaned_data.get("security")
         try:
