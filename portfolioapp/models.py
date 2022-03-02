@@ -300,9 +300,12 @@ class InvestmentAccount(models.Model):
 
         return sec_amounts_list
 
-    # Returns a list of ISINs for securities in this investment account.
+    # Returns a queryset of owned securities in this investment account.
     def get_owned_securities(self):
-        sec_owned_ISINs = list(self.get_securities_dict().keys())
+        sec_owned_ISINs = []
+        owned_securities = self.get_owned_securities_list()
+        for sec_ent in owned_securities:
+            sec_owned_ISINs.append(sec_ent["security"].ISIN)
         return Security.objects.filter(ISIN__in=sec_owned_ISINs)
 
     # Returns a list of securities with each entity represented as a dictionary.
@@ -311,7 +314,7 @@ class InvestmentAccount(models.Model):
             all_securities_list = self.get_securities_dict()
             owned_securities = {}
             for sec in all_securities_list:
-                if all_securities_list[sec]["shares_owned"]:
+                if all_securities_list[sec]["shares_owned"] > 0:
                     owned_securities[sec] = all_securities_list[sec]
             return list(owned_securities.values())
         else:
