@@ -4,12 +4,8 @@ import os, sys
 def deploy_application():
 
     # Get commit message
-    if len(sys.argv) == 2:
-        if isinstance(sys.argv[1], str):
-            message = sys.argv[1]
-        else:
-            print("Commit message must be a string")
-            return 0
+    if len(sys.argv) > 1:
+        message = "\"" + ".join(sys.argv[1:])" + "\""
     else:
         print("Please provide the commit message as the second argument")
         return 0
@@ -20,7 +16,7 @@ def deploy_application():
 
     # Abort if at least one test has failed
     if failed_tests:
-        print("Deployment aborted.")
+        print("Deployment aborted due to at least one test failure")
         return 0
 
     # Creating commit
@@ -35,7 +31,7 @@ def deploy_application():
     print("\nDeploying to Github...")
     os.system("git push github main")
 
-    print("Deployment completed")
+    print("\nDeployment completed")
     return 1
 
 
