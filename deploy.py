@@ -5,7 +5,7 @@ def deploy_application():
 
     # Get commit message
     if len(sys.argv) > 1:
-        message = "\"" + ".join(sys.argv[1:])" + "\""
+        message = "\"" + " ".join(sys.argv[1:]) + "\""
     else:
         print("Please provide the commit message as the second argument")
         return 0

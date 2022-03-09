@@ -16,7 +16,7 @@ class AccessControlTests(TestCase):
     def test_portfolio_overview_logged_in(self):
         """
         If logged in, and the user has a selected portfolio, a request for the overview page should successfully
-        display the overview page.
+        display the overview page
         """
 
         # Create and login a user instance
