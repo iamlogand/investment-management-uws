@@ -3,6 +3,7 @@ gunicorn
 django-heroku
 django-allauth
 yahoo_fin
+django-environ
 redis
 celery
 eventlet
