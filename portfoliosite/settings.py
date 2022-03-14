@@ -132,11 +132,11 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 # Default login page
 LOGIN_REDIRECT_URL = "portfolioapp:overview"
 
-# allauth specific settings
+# Django-allauth settings
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_AUTHENTICATION_METHOD = "email"
 ACCOUNT_USERNAME_REQUIRED = False
-ACCOUNT_EMAIL_VERIFICATION = "none"  # Temporarily set to none
+ACCOUNT_EMAIL_VERIFICATION = "mandatory"
 
 # Email settings
 DEFAULT_FROM_EMAIL = "no-reply@investment-management-uws.herokuapp.com"
