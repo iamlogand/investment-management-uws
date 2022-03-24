@@ -16,7 +16,7 @@ class User(AbstractUser):
 
 class Portfolio(models.Model):
     owner = models.ForeignKey(User, on_delete=models.CASCADE)
-    name = models.CharField(max_length=50)
+    name = models.CharField(max_length=51)
     selected = models.BooleanField(default=False)
     creation_date = models.DateTimeField()
 

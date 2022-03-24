@@ -313,7 +313,7 @@ def event_delete_view(request, platform_name, account_type_name, event_rank):
                 event_delete_form = EventDeleteForm(request.POST, event_rank=event_rank)
                 if event_delete_form.is_valid():
 
-                    # Delete the account and return to the overview page.
+                    # Delete the event and return to the overview page.
                     event.delete()
                     return HttpResponseRedirect("/investment-accounts/" +
                                                 investment_account.account_type.platform.name + "/" +

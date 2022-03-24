@@ -9,12 +9,12 @@ urlpatterns = [
     # URLs for the admin site
     path('admin/', admin.site.urls),
 
-    # Replace some allauth views with 404 responses (effectively removing them from use)
+    # Replace some Django-allauth pages with 404 responses (effectively removing them from use)
     path('accounts/email/', custom_404),
     path('accounts/password/change/', custom_404),
     path('accounts/password/set/', custom_404),
 
-    # URLs for allauth (login, sign up, verify email, etc.)
+    # URLs for remaining Django-allauth pages (login, sign up, verify email, etc.)
     path('accounts/', include('allauth.urls')),
 ]
 

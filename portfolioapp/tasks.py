@@ -2,7 +2,6 @@ import datetime
 from yahoo_fin import stock_info
 from celery import shared_task
 from django.utils import timezone as django_timezone
-
 from .models import *
 
 
