@@ -15,8 +15,6 @@ The app is a work in progress, but current features include:
 
 ## Limitations
 
-*Update 18/02/2022: mandatory email validation has been temporarily suspended. Anyone can now register an account and sign in without validating their email address. However, password reset will only be possible for whitelisted users.*
-
 The app takes about 15 seconds to load after at least 30 minutes of inactivity. This is a consequence of using Heroku's free package.
 
 This app depends on a free, but limited, email server. Consequently, verification and password reset emails can only be sent to already whitelisted email addresses.
